@@ -1,4 +1,4 @@
-from agent import Runner, Chaser
+from agent import *
 import pygame
 from constants import *
 from board import Board
@@ -11,6 +11,7 @@ class Game:
         self.window = window
         self.moves_list = {}
         self.round = 0
+        self.win = None
 
 
     def update(self):
@@ -25,8 +26,6 @@ class Game:
         self.turn = self.board.agent_list[0]
         self.valid_moves = {}
 
-    def winner(self):
-        return self.board.winner()
 
     def reset(self):
         self._init()
@@ -48,8 +47,14 @@ class Game:
         return False
 
 
+    def winner(self):
+        return self.board.winner()
+    
+    
     def collision(self, row, col):
         agent = self.board.get_agent(row, col)
+        print("Runner is caught by {}".format(agent.name))
+
 
     def _move(self, row, col):
         agent = self.board.get_agent(row, col)
@@ -72,21 +77,30 @@ class Game:
     
     def change_turn(self):
         self.valid_moves = {}
-        if self.turn == self.board.agent_list[0]:
-            self.turn = self.board.agent_list[1]
-        elif self.turn == self.board.agent_list[1]:
-            self.turn = self.board.agent_list[2]
-        else:
+        self.board.agent_list = []
+        for agent in self.board.get_all_agents():
+            self.board.agent_list.append(agent)
+            
+        if self.turn.name == "C2":
             self.turn = self.board.agent_list[0]
-            self.round += 1
+        elif self.turn.name == "R":
+            self.turn = self.board.agent_list[1]
+        else:
+            self.turn = self.board.agent_list[2]
+            
 
 
     def get_board(self):
         return self.board
 
-    def ai_move(self, board):
-        self.board = board
+    def ai_move(self, new_board):
+        self.board = new_board
+        """
         moves = self.board.get_valid_moves(self.turn)
         row, col = rnd.choice(list(moves.values()))
         self.board.move(self.turn, row, col)
+        """
         self.change_turn()
+        
+        
+        
